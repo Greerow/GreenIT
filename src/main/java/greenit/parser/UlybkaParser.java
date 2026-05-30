@@ -1,5 +1,6 @@
 package greenit.parser;
 
+import java.io.FileWriter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import greenit.GreenitApplication;
@@ -16,18 +17,21 @@ import org.springframework.web.client.RestTemplate;
 public class UlybkaParser {
 
     public static void main(String[] args) throws Exception {
+        FileWriter writer = new FileWriter("ulybka.csv");
 
-        ConfigurableApplicationContext context =
-                SpringApplication.run(GreenitApplication.class, args);
+        writer.write("name,price,oldPrice\n");
 
-        ProductRepository productRepository =
-                context.getBean(ProductRepository.class);
-
-        StoreRepository storeRepository =
-                context.getBean(StoreRepository.class);
-
-        PriceRepository priceRepository =
-                context.getBean(PriceRepository.class);
+//        ConfigurableApplicationContext context =
+//                SpringApplication.run(GreenitApplication.class, args);
+//
+//        ProductRepository productRepository =
+//                context.getBean(ProductRepository.class);
+//
+//        StoreRepository storeRepository =
+//                context.getBean(StoreRepository.class);
+//
+//        PriceRepository priceRepository =
+//                context.getBean(PriceRepository.class);
 
         // создаем магазин ОДИН раз
         Store store = new Store();
@@ -35,14 +39,14 @@ public class UlybkaParser {
         store.setCity("Севастополь");
         store.setStoreType("cosmetic");
 
-        storeRepository.save(store);
+//        storeRepository.save(store);
 
         RestTemplate restTemplate = new RestTemplate();
 
         ObjectMapper mapper = new ObjectMapper();
 
         // pages
-        for (int page = 1; page <= 3; page++) {
+        for (int page = 1; page <= 64; page++) {
 
             String url =
                     "https://bff.r-ulybka.ru/api/products?page="
@@ -52,6 +56,7 @@ public class UlybkaParser {
             String json = restTemplate.getForObject(url, String.class);
 
             JsonNode root = mapper.readTree(json);
+
 
             JsonNode items = root.path("_embedded").path("items");
 
@@ -63,7 +68,7 @@ public class UlybkaParser {
 
                 JsonNode prices = item.path("prices");
 
-                System.out.println("Товар: " + name);
+//                System.out.println("Товар: " + name);
 
                 if (prices.isArray() && prices.size() > 0) {
 
@@ -74,17 +79,30 @@ public class UlybkaParser {
                     int salePrice = firstPrice.path("salePrice").asInt();
 
                     int regularPrice = firstPrice.path("regularPrice").asInt();
+                    double finalPrice;
 
-                    System.out.println("Цена: " + price);
-                    System.out.println("Цена со скидкой: " + salePrice);
-                    System.out.println("Старая цена: " + regularPrice);
+                    if (salePrice > 0) {
+                        finalPrice = salePrice;
+                    } else {
+                        finalPrice = price;
+                    }
+
+                    writer.write("\"" + name.replace("\"", "'") + "\"," +
+                                    finalPrice + "," +
+                                    (regularPrice) +
+                                    "\n"
+                    );
+
+//                    System.out.println("Цена: " + price);
+//                    System.out.println("Цена со скидкой: " + salePrice);
+//                    System.out.println("Старая цена: " + regularPrice);
 
                     Product product = new Product();
                     product.setName(name);
                     product.setCategory("cosmetics");
                     product.setNormalizedName(name.toLowerCase());
 
-                    productRepository.save(product);
+//                    productRepository.save(product);
 
                     Price productPrice = new Price();
 
@@ -100,14 +118,16 @@ public class UlybkaParser {
                     productPrice.setStore(store);
                     productPrice.setProduct(product);
 
-                    priceRepository.save(productPrice);
+//                    priceRepository.save(productPrice);
 
                 } else {
-                    System.out.println("Цены нет");
+//                    System.out.println("Цены нет");
                 }
 
-                System.out.println("------------------");
+//                System.out.println("------------------");
             }
         }
+        writer.close();
+        System.out.println("CSV сохранен");
     }
 }
