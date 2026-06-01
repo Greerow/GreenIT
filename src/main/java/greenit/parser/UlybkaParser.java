@@ -19,7 +19,7 @@ public class UlybkaParser {
     public static void main(String[] args) throws Exception {
         FileWriter writer = new FileWriter("ulybka.csv");
 
-        writer.write("name,price,oldPrice\n");
+        writer.write("brand,name,price,oldPrice\n");
 
 //        ConfigurableApplicationContext context =
 //                SpringApplication.run(GreenitApplication.class, args);
@@ -34,10 +34,10 @@ public class UlybkaParser {
 //                context.getBean(PriceRepository.class);
 
         // создаем магазин ОДИН раз
-        Store store = new Store();
-        store.setName("Улыбка Радуги");
-        store.setCity("Севастополь");
-        store.setStoreType("cosmetic");
+//        Store store = new Store();
+//        store.setName("Улыбка Радуги");
+//        store.setCity("Севастополь");
+//        store.setStoreType("cosmetic");
 
 //        storeRepository.save(store);
 
@@ -74,6 +74,9 @@ public class UlybkaParser {
 
                     JsonNode firstPrice = prices.get(0);
 
+                    String brand = item.path("brand")
+                                    .path("name")
+                                    .asText();
                     int price = firstPrice.path("price").asInt();
 
                     int salePrice = firstPrice.path("salePrice").asInt();
@@ -87,36 +90,38 @@ public class UlybkaParser {
                         finalPrice = price;
                     }
 
-                    writer.write("\"" + name.replace("\"", "'") + "\"," +
+                    writer.write(
+                            "\"" + brand + "\"," +
+                                    "\"" + name.replace("\"", "'") + "\"," +
                                     finalPrice + "," +
-                                    (regularPrice) +
+                                    regularPrice +
                                     "\n"
                     );
 
 //                    System.out.println("Цена: " + price);
 //                    System.out.println("Цена со скидкой: " + salePrice);
 //                    System.out.println("Старая цена: " + regularPrice);
-
-                    Product product = new Product();
-                    product.setName(name);
-                    product.setCategory("cosmetics");
-                    product.setNormalizedName(name.toLowerCase());
-
-//                    productRepository.save(product);
-
-                    Price productPrice = new Price();
+//
+//                    Product product = new Product();
+//                    product.setName(name);
+//                    product.setCategory("cosmetics");
+//                    product.setNormalizedName(name.toLowerCase());
+//
+////                    productRepository.save(product);
+//
+//                    Price productPrice = new Price();
 
                     // если salePrice есть — берем его
-                    if (salePrice > 0) {
-                        productPrice.setPrice(salePrice / 100.0);
-                    } else {
-                        productPrice.setPrice(price / 100.0);
-                    }
-
-                    productPrice.setOldPrice(regularPrice / 100.0);
-
-                    productPrice.setStore(store);
-                    productPrice.setProduct(product);
+//                    if (salePrice > 0) {
+//                        productPrice.setPrice(salePrice / 100.0);
+//                    } else {
+//                        productPrice.setPrice(price / 100.0);
+//                    }
+//
+//                    productPrice.setOldPrice(regularPrice / 100.0);
+//
+//                    productPrice.setStore(store);
+//                    productPrice.setProduct(product);
 
 //                    priceRepository.save(productPrice);
 
