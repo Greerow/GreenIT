@@ -66,6 +66,11 @@ public class ProductMatchingService {
                         && !shade1.equals(shade2)) {
                     continue;
                 }
+                if (!isCompatible(
+                        magnit.getName(),
+                        ulybka.getName())) {
+                    continue;
+                }
 
                 int percent = calculateMatchPercent(
                         magnit.getName(),
@@ -171,23 +176,43 @@ public class ProductMatchingService {
 
     private static String extractShade(String name) {
 
-        String normalized = name
-                .toLowerCase()
-                .replace("тон", " тон ")
-                .replaceAll("[^а-яa-z0-9 ]", " ")
-                .replaceAll("\\s+", " ")
-                .trim();
+        String normalized = name.toLowerCase();
 
-        String[] words = normalized.split(" ");
+        String[] words = normalized.split("[^a-zа-я0-9]+");
 
-        for (int i = 0; i < words.length; i++) {
+        for (String word : words) {
 
-            if (words[i].equals("тон") && i + 1 < words.length) {
-                return words[i + 1];
+            if (word.matches("\\d{1,2}")) {
+                return word;
             }
         }
 
         return "";
+    }
+    private static boolean isCompatible(String name1, String name2) {
+
+        String n1 = name1.toLowerCase();
+        String n2 = name2.toLowerCase();
+
+        // дневной / ночной
+        if (n1.contains("дневн") && n2.contains("ночн")) {
+            return false;
+        }
+
+        if (n1.contains("ночн") && n2.contains("дневн")) {
+            return false;
+        }
+
+        // мужской / женский
+        if (n1.contains("мужск") && n2.contains("женск")) {
+            return false;
+        }
+
+        if (n1.contains("женск") && n2.contains("мужск")) {
+            return false;
+        }
+
+        return true;
     }
 
     private static Set<String> normalizeToWords(String name) {
