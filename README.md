@@ -37,17 +37,17 @@ Telegram-бот для поиска и сравнения цен товаров 
 
 ## Скриншоты
 
-### Поиск товаров
+### Поиск товара
 
-![Поиск](https://disk.yandex.ru/i/klCRHktPRgkXcA)
+![Поиск товара](images/find-bot.png)
 
 ### Сравнение цен
 
-![Сравнение](images/compare-price.png)
+![Сравнение цен](images/bot-compare.png)
 
-### Исходный код
+### Главный экран
 
-![Код](https://disk.yandex.ru/i/W4vdHu-o5b5X1g)
+![Главный экран](images/greenit.png)
 
 ## Планы развития
 
