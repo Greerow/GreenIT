@@ -9,11 +9,20 @@ import greenit.model.CsvProduct;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ProductMatchingService {
 
     public static void main(String[] args) throws Exception {
+
+        FileWriter writer =
+                new FileWriter("product_matching.csv");
+
+        writer.write(
+                "magnitName,magnitPrice,ulybkaName,ulybkaPrice,matchPercent\n");
 
 //        ConfigurableApplicationContext context =
 //                SpringApplication.run(GreenitApplication.class, args);
@@ -76,8 +85,23 @@ public class ProductMatchingService {
                         magnit.getName(),
                         ulybka.getName()
                 );
+                Integer magnitPieces = extractPieces(magnit.getName());
+                Integer ulybkaPieces = extractPieces(ulybka.getName());
+
+                if (magnitPieces != null && ulybkaPieces != null
+                        && !magnitPieces.equals(ulybkaPieces)) {
+                    continue;
+                }
 
                 if (percent >= 80) {
+                    writer.write(
+                            "\"" + magnit.getName() + "\"," +
+                                    magnit.getPrice() + "," +
+                                    "\"" + ulybka.getName() + "\"," +
+                                    ulybka.getPrice() + "," +
+                                    percent + "\n"
+                    );
+
                     matchCount++;
                     double diffPercent = (ulybka.getPrice() - magnit.getPrice()) / magnit.getPrice() * 100;
 
@@ -94,7 +118,10 @@ public class ProductMatchingService {
         }
         System.out.println();
         System.out.println("ВСЕГО МАТЧЕЙ: " + matchCount);
+
+        writer.close();
     }
+
 
     private static List<CsvProduct> readCsv(String fileName) throws Exception {
 
@@ -215,6 +242,7 @@ public class ProductMatchingService {
         return true;
     }
 
+
     private static Set<String> normalizeToWords(String name) {
 
         String normalized = name
@@ -231,5 +259,17 @@ public class ProductMatchingService {
                 .trim();
 
         return new HashSet<>(Arrays.asList(normalized.split(" ")));
+
     }
+    private static Integer extractPieces(String name) {
+        Pattern pattern = Pattern.compile("(\\d+)\\s*шт");
+        Matcher matcher = pattern.matcher(name.toLowerCase());
+
+        if (matcher.find()) {
+            return Integer.parseInt(matcher.group(1));
+        }
+
+        return null;
+    }
+
 }
