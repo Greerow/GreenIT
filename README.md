@@ -47,7 +47,7 @@ Telegram-бот для поиска и сравнения цен товаров 
 
 ### Исходный код
 
-![Код](images/architecture.png)](https://disk.yandex.ru/i/W4vdHu-o5b5X1g)
+![Код](https://disk.yandex.ru/i/W4vdHu-o5b5X1g)
 
 ## Планы развития
 
