@@ -35,6 +35,20 @@ Telegram-бот для поиска и сравнения цен товаров 
 Видео работы проекта:
 [(ссылка на видео)](https://disk.yandex.ru/i/zotzqH8ZZVv_zQ)
 
+## Скриншоты
+
+### Поиск товаров
+
+![Поиск](https://disk.yandex.ru/i/klCRHktPRgkXcA)
+
+### Сравнение цен
+
+![Сравнение](images/compare-price.png)
+
+### Исходный код
+
+![Код](images/architecture.png)](https://disk.yandex.ru/i/W4vdHu-o5b5X1g)
+
 ## Планы развития
 
 - Хранение данных в PostgreSQL
